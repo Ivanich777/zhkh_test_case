@@ -4,11 +4,11 @@ export enum EMeter {
 }
 
 export interface IMeter {
-  id: number;
+  id: string;
   type: EMeter;
-  installation_date: string; // ISO date string
-  is_automatic: boolean;
-  initial_values: number;
-  area_id: number | null;
+  installationDate: string;
+  isAutomatic: boolean;
+  initialValues: number;
+  areaId: string;
   description: string | null;
 }
