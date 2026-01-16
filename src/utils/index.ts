@@ -2,7 +2,7 @@ import type { Area, Meter } from 'types/api.types.ts';
 import type { IArea } from 'types/area.types.ts';
 import { EMeter, IMeter } from 'types/meter.types.ts';
 
-export const mapAreaApiToArea = (areaApi: Area): IArea => {
+export const areaToApp = (areaApi: Area): IArea => {
   return {
     id: areaApi.id,
     fullAddress: `${areaApi.house.address}, ${areaApi.str_number_full}`,
@@ -15,7 +15,7 @@ export const getMeterType = (type: string[]): EMeter => {
   } else return EMeter.ColdWater;
 };
 
-export const mapMeterApiToMeter = (meterApi: Meter): IMeter => {
+export const meterToApp = (meterApi: Meter): IMeter => {
   const type = getMeterType(meterApi._type);
 
   return {

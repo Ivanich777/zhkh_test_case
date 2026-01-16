@@ -1,3 +1,4 @@
+import { Instance } from 'mobx-state-tree';
 import { types } from 'mobx-state-tree';
 import { IArea } from 'types/area.types.ts';
 
@@ -10,4 +11,4 @@ export const createAreaModel = (area: IArea) => {
   return AreaModel.create(area);
 };
 
-export type AreaModelType = typeof AreaModel.Type;
+export type AreaModelType = Instance<typeof AreaModel>;
