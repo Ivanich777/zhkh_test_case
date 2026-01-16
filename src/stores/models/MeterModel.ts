@@ -1,3 +1,4 @@
+import { Instance } from 'mobx-state-tree';
 import { types } from 'mobx-state-tree';
 import { EMeter, IMeter } from 'types/meter.types.ts';
 
@@ -20,3 +21,5 @@ export const MeterModel = types
 export const createMeterModel = (meter: IMeter) => {
   return MeterModel.create(meter);
 };
+
+export type MeterModelType = Instance<typeof MeterModel>;
