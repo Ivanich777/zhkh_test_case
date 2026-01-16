@@ -10,5 +10,5 @@ export interface IMeter {
   isAutomatic: boolean;
   initialValues: number;
   areaId: string;
-  description: string | null;
+  description: string;
 }
