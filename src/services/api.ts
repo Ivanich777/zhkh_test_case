@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://showroom.eis24.me/c300/api/v4/test';
+const BASE_URL = '/api';
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,

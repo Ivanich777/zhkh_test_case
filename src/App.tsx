@@ -1,5 +1,10 @@
+import { MetersTable } from 'components/Table/MetersTable.tsx';
+import { createRootStore } from 'stores/RootStore.ts';
+
 function App() {
-  return <div>App</div>;
+  const store = createRootStore();
+
+  return <MetersTable store={store} />;
 }
 
 export default App;

@@ -7,7 +7,7 @@ export const MeterModel = types
     id: types.string,
     type: types.enumeration('EMeter', Object.values(EMeter)),
     installationDate: types.string,
-    isAutomatic: types.boolean,
+    isAutomatic: types.maybeNull(types.boolean),
     initialValues: types.number,
     areaId: types.string,
     description: types.string,
