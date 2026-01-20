@@ -8,6 +8,9 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "server": "node server/server.js",
+    "prod": "concurrently \"npm:prod:server\" \"npm:prod:client\"",
+    "prod:server": "node server/server.js",
+    "prod:client": "serve -s dist",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css}\""
@@ -32,6 +35,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/styled-components": "^5.1.36",
     "@vitejs/plugin-react-swc": "^4.2.2",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
