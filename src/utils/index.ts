@@ -1,6 +1,8 @@
 import type { Area, Meter } from 'types/api.types.ts';
 import type { IArea } from 'types/area.types.ts';
 import { EMeter, IMeter } from 'types/meter.types.ts';
+import coldIcon from '/assets/icons/HVS.svg';
+import hotIcon from '/assets/icons/GVS.svg';
 
 export const areaToApp = (areaApi: Area): IArea => {
   return {
@@ -22,10 +24,32 @@ export const meterToApp = (meterApi: Meter): IMeter => {
     id: meterApi.id,
     type,
     installationDate: meterApi.installation_date,
-    isAutomatic: meterApi.is_automatic,
+    isAutomatic: meterApi.is_automatic ?? true,
     initialValues:
       meterApi.initial_values.length > 0 ? meterApi.initial_values[0] : 0,
     areaId: meterApi.area?.id,
     description: meterApi.description,
   };
 };
+
+export const getMeterIcon = (type: string) => {
+  switch (type) {
+    case 'ColdWaterAreaMeter':
+      return coldIcon;
+
+    case 'HotWaterAreaMeter':
+      return hotIcon;
+
+    default:
+      return null;
+  }
+};
+
+export function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'string') return error;
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String((error as { message: unknown }).message);
+  }
+  return 'Неизвестная ошибка';
+}

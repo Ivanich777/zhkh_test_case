@@ -1,15 +1,14 @@
-import { Instance } from 'mobx-state-tree';
 import { types } from 'mobx-state-tree';
-import { EMeter, IMeter } from 'types/meter.types.ts';
+import { EMeter, IMeter } from 'types/meter.types';
 
 export const MeterModel = types
   .model('Meter', {
     id: types.string,
     type: types.enumeration('EMeter', Object.values(EMeter)),
     installationDate: types.string,
-    isAutomatic: types.boolean,
+    isAutomatic: types.maybeNull(types.boolean),
     initialValues: types.number,
-    areaId: types.string,
+    areaId: types.maybeNull(types.string),
     description: types.string,
   })
   .views((self) => ({
@@ -18,8 +17,4 @@ export const MeterModel = types
     },
   }));
 
-export const createMeterModel = (meter: IMeter) => {
-  return MeterModel.create(meter);
-};
-
-export type MeterModelType = Instance<typeof MeterModel>;
+export const createMeterModel = (meter: IMeter) => MeterModel.create(meter);

@@ -7,7 +7,7 @@ export interface IMeter {
   id: string;
   type: EMeter;
   installationDate: string;
-  isAutomatic: boolean;
+  isAutomatic: boolean | null;
   initialValues: number;
   areaId: string;
   description: string;

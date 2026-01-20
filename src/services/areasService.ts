@@ -11,13 +11,12 @@ export const areasService = {
 
     const response = await apiClient.get<AreasResponse>('/areas/', {
       params: {
-        /* TODO
-            Здесь надо подумать как инклюдить только уникальные адреса, мб чере з сет коллекцию
-            */
-        id__in: ids.join(','),
+        id__in: ids,
+      },
+      paramsSerializer: {
+        indexes: null,
       },
     });
-
     return response.data.results.map((area) => areaToApp(area));
   },
 };

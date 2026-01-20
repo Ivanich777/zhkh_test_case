@@ -1,7 +1,7 @@
-import { apiClient } from './api';
 import { IMeter } from 'types/meter.types.ts';
 import { MetersResponse } from 'types/api.types.ts';
 import { meterToApp } from 'utils';
+import { apiClient } from 'services/api.ts';
 
 export const metersService = {
   async getMeters(
@@ -28,7 +28,7 @@ export const metersService = {
     };
   },
 
-  async deleteMeter(id: string): Promise<void> {
-    await apiClient.delete(`/meters/${id}/`);
+  async deleteMeter(id: string) {
+    await apiClient.delete(`/meters/${id}`);
   },
 };

@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://showroom.eis24.me/c300/api/v4/test';
-
 export const apiClient = axios.create({
-  baseURL: BASE_URL,
+  baseURL: 'http://localhost:4000/api',
   headers: {
     'Content-Type': 'application/json',
   },
+  maxRedirects: 0,
+  validateStatus: (status) => status >= 200 && status < 400,
 });
 
 apiClient.interceptors.response.use(

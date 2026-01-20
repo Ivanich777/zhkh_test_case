@@ -1,13 +1,11 @@
 import { types, flow, Instance, applySnapshot } from 'mobx-state-tree';
-
 import { MeterModel, createMeterModel } from './models/MeterModel';
 import { AreaModel, createAreaModel } from './models/AreaModel';
-
-import { areasService } from 'services/areasService';
 import { metersService } from 'services/metersService';
-
-import { IArea } from 'types/area.types';
+import { areasService } from 'services/areasService';
 import { IMeter } from 'types/meter.types';
+import { IArea } from 'types/area.types';
+import { getErrorMessage } from 'utils';
 
 export const RootStore = types
   .model('RootStore', {
@@ -21,134 +19,79 @@ export const RootStore = types
     isLoading: types.optional(types.boolean, false),
     error: types.maybeNull(types.string),
   })
-
   .views((self) => ({
-    get hasMore() {
-      return self.meters.length < self.count;
-    },
-
     get totalPages() {
       return Math.ceil(self.count / self.limit);
     },
-
     get currentPage() {
       return Math.floor(self.offset / self.limit) + 1;
     },
-
-    getAreaById(id: string) {
+    getAreaById(id: string | null) {
+      if (!id) return undefined;
       return self.areas.get(id);
     },
   }))
-
   .actions((self) => {
-    const setLoading = (loading: boolean) => {
-      self.isLoading = loading;
-    };
-
-    const setError = (error: string | null) => {
-      self.error = error;
-    };
+    const setLoading = (v: boolean) => (self.isLoading = v);
+    const setError = (v: string | null) => (self.error = v);
 
     const fetchAreas = flow(function* (ids: string[]) {
-      const missingIds = ids.filter((id) => !self.areas.has(id));
-
-      if (!missingIds.length) return;
+      const missing = ids.filter((id) => !self.areas.has(id));
+      if (!missing.length) return;
 
       try {
-        const areas = yield areasService.getAreas(missingIds);
-
-        areas.forEach((area: IArea) => {
-          self.areas.set(area.id, createAreaModel(area));
-        });
-      } catch (error) {
-        console.error('Ошибка загрузки адресов:', error);
+        const areas: IArea[] = yield areasService.getAreas(missing);
+        areas.forEach((area) => self.areas.set(area.id, createAreaModel(area)));
+      } catch (e) {
+        const errorMessage = getErrorMessage(e);
+        setError(errorMessage);
       }
     });
 
-    const fetchMeters = flow(function* (
-      offset: number = 0,
-      mode: 'replace' | 'append' = 'replace'
-    ) {
-      setLoading(true);
-      setError(null);
-
+    const fetchMeters = flow(function* (offsetForPage: number) {
       try {
-        const response = yield metersService.getMeters(self.limit, offset);
+        setLoading(true);
+        setError(null);
 
-        const newMeters = response.results.map((meter: IMeter) =>
-          createMeterModel(meter)
+        const response = yield metersService.getMeters(
+          self.limit,
+          offsetForPage
         );
+        const meters = response.results.map(createMeterModel);
 
-        if (mode === 'replace') {
-          applySnapshot(self.meters, newMeters);
-        } else {
-          self.meters.push(...newMeters);
-        }
-
-        self.offset = offset;
+        applySnapshot(self.meters, meters);
+        self.offset = offsetForPage;
         self.count = response.count;
 
         const areaIds: string[] = Array.from(
-          new Set(response.results.map((m: IMeter) => m.areaId))
+          new Set(response.results.map((m: IMeter) => m.areaId).filter(Boolean))
         );
-
-        if (areaIds.length > 0) {
-          fetchAreas(areaIds);
-        }
+        yield fetchAreas(areaIds);
       } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : String(error);
-
-        setError(message || 'Ошибка загрузки счетчиков');
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
     });
 
-    const loadNextPage = flow(function* () {
-      if (self.isLoading || !self.hasMore) return;
-
-      const nextOffset = self.offset + self.limit;
-
-      yield fetchMeters(nextOffset, 'append');
-    });
-
-    const goToPage = flow(function* (page: number) {
-      const newOffset = (page - 1) * self.limit;
-
-      yield fetchMeters(newOffset, 'replace');
-    });
+    const goToPage = (page: number) => {
+      const offset = (page - 1) * self.limit;
+      fetchMeters(offset);
+    };
 
     const deleteMeter = flow(function* (id: string) {
       try {
         yield metersService.deleteMeter(id);
 
-        const index = self.meters.findIndex((m) => m.id === id);
-
-        if (index !== -1) {
-          self.meters.splice(index, 1);
-          self.count -= 1;
-        }
-
-        if (self.meters.length < self.offset + self.limit && self.hasMore) {
-          yield loadNextPage();
-        }
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : String(error);
-
-        setError(message || 'Ошибка удаления счетчика');
-        throw error;
+        yield fetchMeters(self.offset);
+      } catch (e) {
+        const errorMessage = getErrorMessage(e);
+        setError(errorMessage);
       }
     });
 
-    return {
-      setLoading,
-      setError,
-      fetchAreas,
-      fetchMeters,
-      loadNextPage,
-      goToPage,
-      deleteMeter,
-    };
+    return { fetchMeters, goToPage, fetchAreas, deleteMeter };
   });
 
 export type RootStoreType = Instance<typeof RootStore>;
