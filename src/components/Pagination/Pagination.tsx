@@ -11,8 +11,8 @@ interface IPaginationProps {
 
 export const Pagination: React.FC<IPaginationProps> = observer(({ store }) => {
   const { getPages, goToPage, currentPage, totalPages } = usePagination(store);
-  if (totalPages <= 1) return null;
 
+  if (totalPages <= 1) return null;
   return (
     <Wrapper>
       {getPages().map((p, i) =>
@@ -22,6 +22,7 @@ export const Pagination: React.FC<IPaginationProps> = observer(({ store }) => {
           <PageButton
             key={`page-${p}`}
             $active={p === currentPage}
+            disabled={p === currentPage || store.isLoading}
             onClick={() => goToPage(p)}
           >
             {p}

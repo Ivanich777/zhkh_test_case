@@ -15,11 +15,12 @@ import { List } from 'react-window';
 
 import { RootStoreType } from 'stores/RootStore';
 
-import { Th, Footer, Layout, Header } from './MetersTableStyled';
+import { Th, Footer, Layout, Header, Body } from './MetersTableStyled';
 
 import { Pagination } from 'components/Pagination/Pagination';
 
 import { MeterRow } from 'components/Table/MeterRow.tsx';
+import { Loader } from 'components/Lodaer/Lodaer.tsx';
 
 interface Props {
   store: RootStoreType;
@@ -53,14 +54,14 @@ export const MetersTable: React.FC<Props> = observer(({ store }) => {
       <Header>
         <Th>№</Th>
         <Th>Тип</Th>
-        <Th>Адрес</Th>
         <Th>Дата установки</Th>
-        <Th>Авто</Th>
-        <Th>Показания</Th>
-        <Th>Описание</Th>
+        <Th>Автоматический</Th>
+        <Th>Текущие показания</Th>
+        <Th>Адрес</Th>
+        <Th>Примечание</Th>
       </Header>
 
-      <div
+      <Body
         ref={containerRef}
         style={{
           flex: 1,
@@ -68,15 +69,19 @@ export const MetersTable: React.FC<Props> = observer(({ store }) => {
           overflow: 'hidden',
         }}
       >
-        <List
-          style={{ height, width: '100%' }}
-          rowCount={store.meters.length}
-          rowHeight={52}
-          rowComponent={MeterRow}
-          rowProps={{ store }}
-          overscanCount={5}
-        />
-      </div>
+        {store.isLoading ? (
+          <Loader />
+        ) : (
+          <List
+            style={{ height, width: '100%' }}
+            rowCount={store.meters.length}
+            rowHeight={52}
+            rowComponent={MeterRow}
+            rowProps={{ store }}
+            overscanCount={5}
+          />
+        )}
+      </Body>
 
       <Footer>
         <Pagination store={store} />

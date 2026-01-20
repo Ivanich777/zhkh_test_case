@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const COLUMNS = '60px 160px 0.8fr 200px 80px 120px 200px';
+const COLUMNS = '60px 160px 180px 200px 270px 400px 100px';
 
 export const Layout = styled.div`
   width: 80vw;
@@ -9,6 +9,11 @@ export const Layout = styled.div`
   border-radius: 12px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+`;
+
+export const Body = styled.div`
+  flex: 1;
 `;
 
 export const Header = styled.div`
@@ -24,6 +29,36 @@ export const Header = styled.div`
 export const Th = styled.div`
   padding: 6px 12px;
   font-weight: 500;
+  white-space: nowrap;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 16px;
+  color: #697180;
+`;
+
+export const DeleteButton = styled.button`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  height: 40px;
+  width: 40px;
+  transform: translateY(-50%);
+
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: translateY(-50%) scale(1.1);
+  }
 `;
 
 export const Row = styled.div`
@@ -35,6 +70,10 @@ export const Row = styled.div`
 
   &:hover {
     background: #f7f8f9;
+  }
+
+  &:hover .delete-btn {
+    opacity: 1;
   }
 `;
 

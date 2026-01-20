@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const BASE_URL = '/api';
-
 export const apiClient = axios.create({
-  baseURL: BASE_URL,
+  baseURL: 'http://localhost:4000/api',
   headers: {
     'Content-Type': 'application/json',
   },
+  maxRedirects: 0,
+  validateStatus: (status) => status >= 200 && status < 400,
 });
 
 apiClient.interceptors.response.use(

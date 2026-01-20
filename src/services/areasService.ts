@@ -9,10 +9,6 @@ export const areasService = {
       return [];
     }
 
-    /** Todo
-     * ПОДУМАТЬ НАД ОПТИМИЗАЦИЕЙ!!!
-     * */
-
     const response = await apiClient.get<AreasResponse>('/areas/', {
       params: {
         id__in: ids,
@@ -21,7 +17,6 @@ export const areasService = {
         indexes: null,
       },
     });
-
     return response.data.results.map((area) => areaToApp(area));
   },
 };

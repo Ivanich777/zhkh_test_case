@@ -5,6 +5,7 @@ import { metersService } from 'services/metersService';
 import { areasService } from 'services/areasService';
 import { IMeter } from 'types/meter.types';
 import { IArea } from 'types/area.types';
+import { getErrorMessage } from 'utils';
 
 export const RootStore = types
   .model('RootStore', {
@@ -42,7 +43,8 @@ export const RootStore = types
         const areas: IArea[] = yield areasService.getAreas(missing);
         areas.forEach((area) => self.areas.set(area.id, createAreaModel(area)));
       } catch (e) {
-        console.error('Ошибка загрузки адресов:', e);
+        const errorMessage = getErrorMessage(e);
+        setError(errorMessage);
       }
     });
 
@@ -66,14 +68,8 @@ export const RootStore = types
         );
         yield fetchAreas(areaIds);
       } catch (error: unknown) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : typeof error === 'string'
-              ? error
-              : 'Неизвестная ошибка';
-
-        setError(message);
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -84,7 +80,18 @@ export const RootStore = types
       fetchMeters(offset);
     };
 
-    return { fetchMeters, goToPage, fetchAreas };
+    const deleteMeter = flow(function* (id: string) {
+      try {
+        yield metersService.deleteMeter(id);
+
+        yield fetchMeters(self.offset);
+      } catch (e) {
+        const errorMessage = getErrorMessage(e);
+        setError(errorMessage);
+      }
+    });
+
+    return { fetchMeters, goToPage, fetchAreas, deleteMeter };
   });
 
 export type RootStoreType = Instance<typeof RootStore>;
