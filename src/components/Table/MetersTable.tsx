@@ -74,7 +74,7 @@ export const MetersTable: React.FC<Props> = observer(({ store }) => {
           rowHeight={52}
           rowComponent={MeterRow}
           rowProps={{ store }}
-          // overscanCount={5}
+          overscanCount={5}
         />
       </div>
 
